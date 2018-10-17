@@ -4,12 +4,13 @@ import tensorflow.contrib.layers as lays
 import numpy as np
 import matplotlib.pyplot as plt
 
-
+#This code does not work
+#it is old an unworking
 
 image_size = 160
 
 batch_size = 60 # sampling at 60 times a second, so 1 batch equals 1 second
-lr = 0.00001      # learning rate
+lr = 0.0001      # learning rate
 
 def encoder(inputs):
     net = lays.conv2d(inputs, 160, [10, 10], stride=2, padding ='SAME');
@@ -59,21 +60,19 @@ def main_loop():
                 return
 
         batch = np.asarray(batch_img)
-        print(batch.shape)
         _, c = sess.run([train_op, loss], feed_dict={ae_inputs: batch})
         print('Epoch: {} - cost= {:.5f}'.format((epoch_num + 1), c))
-        epoch_num += 1
 
 #tensorflow stuff
 ae_inputs = tf.placeholder(tf.float32, (None, image_size, image_size, 3))
 ae_outputs = autoencoder(ae_inputs)
 
-loss = tf.reduce_mean(tf.square(ae_outputs - ae_inputs))
+loss = tf.reduce_mean(tf.square(ae_outputs + ae_inputs))
 train_op = tf.train.AdamOptimizer(learning_rate=lr).minimize(loss)
 
-#config = tf.ConfigProto()
-#config.gpu_options.per_process_gpu_memory_fraction = 0.5
-#config.gpu_options.allow_growth = True
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.5
+config.gpu_options.allow_growth = True
 
 init = tf.global_variables_initializer()
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
